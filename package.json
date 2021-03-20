@@ -1,0 +1,22 @@
+{
+  "name": "nodejs-task-manager-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "Z:/Programs/MongoDB/bin/mongod.exe --dbpath=Z:/Programs/MongoDB-data"
+  },
+  "keywords": [],
+  "author": "Brian Dizon",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongodb": "^3.6.5",
+    "mongoose": "^5.12.1",
+    "validator": "^13.5.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
