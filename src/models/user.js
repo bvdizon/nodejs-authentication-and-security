@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
+    unique: true,
     validate(value) {
       if (!validator.isEmail(value)) {
         throw new Error('Please provide a valid email.');
@@ -41,7 +42,22 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-// adding middleware before saving to db, hence "pre"
+// custom function that will find a user in db
+userSchema.statics.findByCredentials = async (email, password) => {
+  // find the user with the supplied email
+  const user = await User.findOne({ email });
+
+  if (!user) throw new Error('Unable to login.');
+
+  // compare hashed passwords
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) throw new Error('Unable to login with those credentials');
+
+  return user;
+};
+
+// adding middleware to hash pw before saving to db, hence "pre"
 userSchema.pre('save', async function (next) {
   // storing the document being saved as a variable
   const user = this;
