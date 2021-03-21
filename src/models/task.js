@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
-// mongoose model - Task
-const Task = mongoose.model('Task', {
+// new Schema for tasks
+const taskSchema = new mongoose.Schema({
   description: {
     type: String,
     required: true,
@@ -12,5 +12,15 @@ const Task = mongoose.model('Task', {
     default: false,
   },
 });
+
+// middleware to before saving task documents
+taskSchema.pre('save', async function (next) {
+  const task = this;
+  console.log(task);
+  next();
+});
+
+// mongoose model - Task
+const Task = mongoose.model('Task', taskSchema);
 
 module.exports = Task;

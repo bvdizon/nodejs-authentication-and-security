@@ -46,10 +46,29 @@ router.patch('/users/:id', async (req, res) => {
   if (!isAllowedField) return res.send({ error: 'Failed to update user.' });
 
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    /**
+     * code before implementing middleware
+     
+      const user = await User.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
+      });
+
+     */
+
+    // create a variable to save user document
+    const user = await User.findById(req.params.id);
+
+    // itirate over the updates and access property dynamically
+    updates.forEach((update) => (user[update] = req.body[update]));
+
+    // save the changes to db
+    await user.save();
+
+    // error handling
+    if (!user) return res.status(400).send();
+
+    // success handling
     res.status(200).send(user);
   } catch (error) {
     res.status(400).send(error.message);
