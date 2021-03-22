@@ -61,6 +61,8 @@ userSchema.methods.generateAuthToken = async function () {
   // save token inside the user tokens' property
   user.tokens = user.tokens.concat({ token });
 
+  await user.save();
+
   return token;
 };
 
@@ -85,7 +87,7 @@ userSchema.pre('save', async function (next) {
   const user = this;
 
   // hash the password with bcryptjs if password is either created or modified
-  if (user.isModified) {
+  if (user.isModified('password')) {
     user['password'] = await bcrypt.hash(user['password'], 8);
   }
 
