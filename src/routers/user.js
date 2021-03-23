@@ -33,6 +33,34 @@ router.post('/users/login', async (req, res) => {
   }
 });
 
+// endpoint for logging out user
+router.post('/users/logout', auth, async ({ user, token }, res) => {
+  try {
+    user.tokens = user.tokens.filter((item) => {
+      return item.token !== token;
+    });
+
+    await user.save();
+
+    res.send('You are now logged off.');
+  } catch (error) {
+    res.status(500).send('Unable to perform logout action.');
+  }
+});
+
+// endpoint for logging user out on all devices
+router.post('/users/logoutAll', auth, async ({ user }, res) => {
+  try {
+    user.tokens = [];
+
+    await user.save();
+
+    res.send('You have been logged on all devices.');
+  } catch (error) {
+    res.status(500).send('Unable to log you off on all devices.');
+  }
+});
+
 // endpoint for logging in and authenticating a user from mongoDB
 router.get('/users/me', auth, async (req, res) => {
   res.send(req.user);
