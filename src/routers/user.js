@@ -2,6 +2,7 @@ const express = require('express');
 const router = new express.Router();
 
 const User = require('../models/user');
+const auth = require('../middleware/auth');
 
 // endpoint for creating users
 router.post('/users', async (req, res) => {
@@ -32,14 +33,9 @@ router.post('/users/login', async (req, res) => {
   }
 });
 
-// endpoint for getting ( reading ) users from mongoDB
-router.get('/users', async (req, res) => {
-  try {
-    const users = await User.find({});
-    res.status(200).send(users);
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
+// endpoint for logging in and authenticating a user from mongoDB
+router.get('/users/me', auth, async (req, res) => {
+  res.send(req.user);
 });
 
 // endpoint for getting ( reading ) one user from mongoDB
