@@ -63,7 +63,7 @@ router.post('/users/logoutAll', auth, async ({ user }, res) => {
 
 // endpoint for logging in and authenticating a user from mongoDB
 router.get('/users/me', auth, async (req, res) => {
-  res.send(req.user);
+  res.send({ user: req.user, token: req.token });
 });
 
 // endpoint for getting ( reading ) one user from mongoDB
