@@ -98,9 +98,9 @@ router.patch('/users/me', auth, async (req, res) => {
 });
 
 // endpoint for deleting a user
-router.delete('/users/me', auth, async ({ user }, res) => {
+router.delete('/users/me', auth, async (req, res) => {
   try {
-    await user.remove();
+    await req.user.remove();
     res.send('You have successfully deleted your user profile.');
   } catch (error) {
     res.status(500).send('Unable to delete your user profile');
