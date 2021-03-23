@@ -14,6 +14,21 @@ router.post('/users', async (req, res) => {
   }
 });
 
+// endpoint for user login
+router.post('/users/login', async (req, res) => {
+  try {
+    // setting reusable function "findByCredentials( )" --- this function will be created in models/user.js
+    const user = await User.findByCredentials(
+      req.body.email,
+      req.body.password
+    );
+
+    res.send(user);
+  } catch (error) {
+    res.status(400).send();
+  }
+});
+
 // endpoint for getting ( reading ) users from mongoDB
 router.get('/users', async (req, res) => {
   try {
@@ -46,10 +61,19 @@ router.patch('/users/:id', async (req, res) => {
   if (!isAllowedField) return res.send({ error: 'Failed to update user.' });
 
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    // create a variable to save user document
+    const user = await User.findById(req.params.id);
+
+    // itirate over the updates and access property dynamically
+    updates.forEach((update) => (user[update] = req.body[update]));
+
+    // save the changes to db
+    await user.save();
+
+    // error handling
+    if (!user) return res.status(400).send();
+
+    // success handling
     res.status(200).send(user);
   } catch (error) {
     res.status(400).send(error.message);
