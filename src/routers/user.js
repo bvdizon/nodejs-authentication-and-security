@@ -23,9 +23,12 @@ router.post('/users/login', async (req, res) => {
       req.body.password
     );
 
-    res.send(user);
+    // call to custom fx to generate token
+    const token = await user.generateAuthToken();
+
+    res.send({ user, token });
   } catch (error) {
-    res.status(400).send();
+    res.status(400).send('Error');
   }
 });
 

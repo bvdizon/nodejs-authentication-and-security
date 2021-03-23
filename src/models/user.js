@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 // instantiating a mongoose Schema object for User
 const userSchema = new mongoose.Schema({
@@ -40,7 +41,30 @@ const userSchema = new mongoose.Schema({
       if (value < 0) throw new Error('Age must be a positive number.');
     },
   },
+  tokens: [
+    {
+      token: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
+
+// custom function to generate JWT
+userSchema.methods.generateAuthToken = async function () {
+  const user = this;
+
+  // generate JWT
+  const token = jwt.sign({ _id: user._id.toString() }, 'bvdizon');
+
+  // save token inside the user tokens' property
+  user.tokens = user.tokens.concat({ token });
+
+  await user.save();
+
+  return token;
+};
 
 // custom function that will find a user in db
 userSchema.statics.findByCredentials = async (email, password) => {
@@ -63,7 +87,7 @@ userSchema.pre('save', async function (next) {
   const user = this;
 
   // hash the password with bcryptjs if password is either created or modified
-  if (user.isModified) {
+  if (user.isModified('password')) {
     user['password'] = await bcrypt.hash(user['password'], 8);
   }
 
