@@ -15,8 +15,9 @@ const auth = async (req, res, next) => {
       'tokens.token': token,
     });
 
-    // pass the user as a property to req object
+    // pass the token and user as a properties to req object
     req.user = user;
+    req.token = token;
 
     next();
   } catch (error) {
