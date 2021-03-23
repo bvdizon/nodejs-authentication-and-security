@@ -11,6 +11,11 @@ const taskSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  owner: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: 'User', // this will create a reference or relationship between task and user
+  },
 });
 
 // middleware to before saving task documents

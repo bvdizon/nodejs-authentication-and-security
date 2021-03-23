@@ -51,6 +51,13 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
+// using Virtuals
+userSchema.virtual('tasks', {
+  ref: 'Task', // reference to the model you want to link to
+  localField: '_id', // this is the _id value of the User model
+  foreignField: 'owner', // value in Task model that matches localField value
+});
+
 // custom function to generate JWT
 userSchema.methods.generateAuthToken = async function () {
   const user = this;
