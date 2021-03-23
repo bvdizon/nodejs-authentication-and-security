@@ -66,6 +66,20 @@ userSchema.methods.generateAuthToken = async function () {
   return token;
 };
 
+// hiding private data with ".toJSON"
+userSchema.methods.toJSON = function () {
+  const user = this;
+  // "toObject()" to create user and be able to change its properties
+  const userObject = user.toObject();
+
+  // delete to hide the properties when sending data back
+  delete userObject.password;
+  delete userObject.tokens;
+
+  // return modified useObject
+  return userObject;
+};
+
 // custom function that will find a user in db
 userSchema.statics.findByCredentials = async (email, password) => {
   // find the user with the supplied email
