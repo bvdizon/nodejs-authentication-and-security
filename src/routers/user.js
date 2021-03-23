@@ -78,34 +78,58 @@ router.get('/users/:id', async (req, res) => {
 });
 
 // endpoints for updating a single user
-router.patch('/users/:id', async (req, res) => {
+router.patch('/users/me', auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowedFieldsToUpdate = ['name', 'age', 'email', 'password'];
-  const isAllowedField = updates.every((update) =>
-    allowedFieldsToUpdate.includes(update)
+  const isAllowedField = updates.every((item) =>
+    allowedFieldsToUpdate.includes(item)
   );
 
-  if (!isAllowedField) return res.send({ error: 'Failed to update user.' });
+  if (!isAllowedField)
+    return res.send({ error: 'Failed to update user profile.' });
 
   try {
-    // create a variable to save user document
-    const user = await User.findById(req.params.id);
-
-    // itirate over the updates and access property dynamically
-    updates.forEach((update) => (user[update] = req.body[update]));
-
-    // save the changes to db
-    await user.save();
-
-    // error handling
-    if (!user) return res.status(400).send();
-
-    // success handling
-    res.status(200).send(user);
+    updates.forEach((update) => (req.user[update] = req.body[update]));
+    await req.user.save();
+    res.send('User profile has been updated.');
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(500).send('Update on user profile failed.');
   }
 });
+
+/**
+ * Before implementing authentication
+ * 
+    router.patch('/users/:id', async (req, res) => {
+      const updates = Object.keys(req.body);
+      const allowedFieldsToUpdate = ['name', 'age', 'email', 'password'];
+      const isAllowedField = updates.every((update) =>
+        allowedFieldsToUpdate.includes(update)
+      );
+    
+      if (!isAllowedField) return res.send({ error: 'Failed to update user.' });
+    
+      try {
+        // create a variable to save user document
+        const user = await User.findById(req.params.id);
+    
+        // itirate over the updates and access property dynamically
+        updates.forEach((update) => (user[update] = req.body[update]));
+    
+        // save the changes to db
+        await user.save();
+    
+        // error handling
+        if (!user) return res.status(400).send();
+    
+        // success handling
+        res.status(200).send(user);
+      } catch (error) {
+        res.status(400).send(error.message);
+      }
+    });
+  
+ */
 
 // endpoint for deleting a user
 router.delete('/users/me', auth, async ({ user }, res) => {
