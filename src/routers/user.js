@@ -108,14 +108,26 @@ router.patch('/users/:id', async (req, res) => {
 });
 
 // endpoint for deleting a user
-router.delete('/users/:id', async (req, res) => {
+router.delete('/users/me', auth, async ({ user }, res) => {
   try {
-    const user = await User.findByIdAndDelete(req.params.id);
-    if (!user) return res.status(400).send({ error: "User ID doesn't exist." });
-    res.send(user);
+    await user.remove();
+    res.send('You have successfully deleted your user profile.');
   } catch (error) {
-    res.status(400).send(error);
+    res.status(500).send('Unable to delete your user profile');
   }
 });
+
+/**
+ * Before implementing authentication:
+      router.delete('/users/:id', async (req, res) => {
+        try {
+          const user = await User.findByIdAndDelete(req.params.id);
+          if (!user) return res.status(400).send({ error: "User ID doesn't exist." });
+          res.send(user);
+        } catch (error) {
+          res.status(400).send(error);
+        }
+      });
+ */
 
 module.exports = router;
